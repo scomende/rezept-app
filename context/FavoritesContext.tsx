@@ -54,15 +54,16 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    const client = supabase;
     let cancelled = false;
 
     async function init() {
       // Zuerst vorhandene Session prüfen (z. B. nach Reload) – sonst wird bei jedem Load ein neuer Anon-User erzeugt
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await client.auth.getSession();
       if (cancelled) return;
 
       if (!session?.user) {
-        const { error } = await supabase.auth.signInAnonymously();
+        const { error } = await client.auth.signInAnonymously();
         if (cancelled) return;
         if (error) {
           setFavoriteIds(loadLocalFavorites());
@@ -71,7 +72,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await client.auth.getUser();
       if (cancelled) return;
       if (!user) {
         setFavoriteIds(loadLocalFavorites());
@@ -79,7 +80,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from("favorites")
         .select("recipe_id")
         .eq("user_id", user.id);
@@ -109,7 +110,8 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const client = supabase;
+      const { data: { user } } = await client.auth.getUser();
       if (!user) {
         setFavoriteIds((prev) => {
           const next = new Set(prev);
@@ -130,13 +132,13 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (isFav) {
-        await supabase
+        await client
           .from("favorites")
           .delete()
           .eq("user_id", user.id)
           .eq("recipe_id", id);
       } else {
-        await supabase.from("favorites").insert({
+        await client.from("favorites").insert({
           user_id: user.id,
           recipe_id: id,
         });
