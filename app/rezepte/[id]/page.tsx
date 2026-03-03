@@ -1,13 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getRecipeById } from "@/data/recipes";
+import { getRecipeById } from "@/lib/recipes";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function RecipePage({ params }: Props) {
   const { id } = await params;
-  const recipe = getRecipeById(id);
+  const recipe = await getRecipeById(id);
 
   if (!recipe) notFound();
 
@@ -43,9 +44,12 @@ export default async function RecipePage({ params }: Props) {
           <span className="text-sm font-medium uppercase tracking-wider text-[var(--muted)]">
             {recipe.category}
           </span>
-          <h1 className="mt-2 text-3xl font-bold text-[var(--foreground)]">
-            {recipe.title}
-          </h1>
+          <div className="mt-2 flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-[var(--foreground)]">
+              {recipe.title}
+            </h1>
+            <FavoriteButton recipeId={recipe.id} className="shrink-0" />
+          </div>
           <p className="mt-3 text-lg text-[var(--muted)]">
             {recipe.description}
           </p>
