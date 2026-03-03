@@ -29,7 +29,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-red-600 dark:text-red-400">
             Rezept-App
           </h1>
-          <p className="text-[var(--muted)] mt-0.5">
+          <p className="text-blue-900 dark:text-blue-300 mt-0.5">
             Rezepte durchstöbern und nachkochen
           </p>
         </div>
